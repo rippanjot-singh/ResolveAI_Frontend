@@ -135,6 +135,8 @@ const CreateForm = () => {
             const result = await handleCreateForm(formData);
             if (result) {
                 setCreatedForm(result);
+                // Redirect to edit mode so user can continue editing with an ID
+                navigate(`/dashboard/forms/edit/${result._id}`, { replace: true });
             }
         }
     };
@@ -231,12 +233,21 @@ const CreateForm = () => {
                         <ChevronRight size={16} className="text-foreground/20 shrink-0" />
                         <span className="text-sm text-foreground font-medium truncate">{isEditMode ? (formName || 'Edit Form') : 'Create Form'}</span>
                     </div>
+
+                    <button
+                        onClick={onSubmit}
+                        disabled={isLoading}
+                        className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded text-sm font-medium hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-sm shadow-primary/20 cursor-pointer"
+                    >
+                        {isLoading ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
+                        <span>{isEditMode ? 'Update Form' : 'Save Form'}</span>
+                    </button>
                 </header>
 
                 <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                     {/* Left Configuration Panel */}
                     <div className="w-full lg:w-[45%] lg:min-w-[400px] border-b lg:border-b-0 lg:border-r border-border bg-surface/20 flex flex-col overflow-y-auto relative">
-                        <div className="p-8 space-y-8 pb-24">
+                        <div className="p-8 space-y-8">
                             {!isChatbotsLoading && chatbots.length === 0 && (
                                 <ChatbotContextWarning />
                             )}
@@ -255,7 +266,6 @@ const CreateForm = () => {
                                             value={formName}
                                             onChange={(e) => setFormName(e.target.value)}
                                             placeholder="e.g. Lead Capture Form"
-                                            disabled={!!createdForm}
                                             className="w-full px-4 py-2 bg-background border border-border rounded text-sm focus:outline-none focus:border-primary transition-colors disabled:opacity-50"
                                         />
                                     </div>
@@ -266,7 +276,6 @@ const CreateForm = () => {
                                             value={formDesc}
                                             onChange={(e) => setFormDesc(e.target.value)}
                                             placeholder="Internal description"
-                                            disabled={!!createdForm}
                                             className="w-full px-4 py-2 bg-background border border-border rounded text-sm focus:outline-none focus:border-primary transition-colors disabled:opacity-50"
                                         />
                                     </div>
@@ -279,14 +288,12 @@ const CreateForm = () => {
                                             <SlidersHorizontal size={16} />
                                             Form Fields
                                         </label>
-                                        {!createdForm && (
-                                            <button 
-                                                onClick={addField}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-surface hover:bg-surface/70 border border-border rounded text-xs font-medium transition-colors cursor-pointer"
-                                            >
-                                                <Plus size={14} /> Add Field
-                                            </button>
-                                        )}
+                                        <button 
+                                            onClick={addField}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-surface hover:bg-surface/70 border border-border rounded text-xs font-medium transition-colors cursor-pointer"
+                                        >
+                                            <Plus size={14} /> Add Field
+                                        </button>
                                     </div>
                                     
                                     <div className="space-y-3">
@@ -340,7 +347,6 @@ const CreateForm = () => {
                                                                     value={field.label}
                                                                     onChange={(e) => updateField(index, 'label', e.target.value)}
                                                                     placeholder="e.g. Phone Number"
-                                                                    disabled={!!createdForm}
                                                                     className="w-full px-3 py-1.5 bg-surface/50 border border-border rounded text-sm focus:outline-none focus:border-primary transition-colors disabled:opacity-50"
                                                                 />
                                                             </div>
@@ -349,7 +355,6 @@ const CreateForm = () => {
                                                                 <select
                                                                     value={field.type}
                                                                     onChange={(e) => updateField(index, 'type', e.target.value)}
-                                                                    disabled={!!createdForm}
                                                                     className="w-full px-3 py-1.5 bg-surface/50 border border-border rounded text-sm focus:outline-none focus:border-primary transition-colors disabled:opacity-50 appearance-none"
                                                                 >
                                                                     {FIELD_TYPES.map(ft => (
@@ -367,7 +372,6 @@ const CreateForm = () => {
                                                                     value={field.optionsStr}
                                                                     onChange={(e) => updateField(index, 'optionsStr', e.target.value)}
                                                                     placeholder="Option 1, Option 2, Option 3"
-                                                                    disabled={!!createdForm}
                                                                     className="w-full px-3 py-1.5 bg-surface/50 border border-border rounded text-sm focus:outline-none focus:border-primary transition-colors disabled:opacity-50"
                                                                 />
                                                             </div>
@@ -375,41 +379,27 @@ const CreateForm = () => {
 
                                                         <div className="flex items-center gap-4 pt-1">
                                                             <label className="flex items-center gap-2 cursor-pointer group">
-                                                                <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${field.required ? 'bg-primary border-primary text-white' : 'border-border bg-background group-hover:border-primary/50'} ${createdForm ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                                                <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${field.required ? 'bg-primary border-primary text-white' : 'border-border bg-background group-hover:border-primary/50'}`}>
                                                                     {field.required && <Check size={10} />}
                                                                 </div>
-                                                                <input type="checkbox" className="hidden" disabled={!!createdForm} checked={field.required} onChange={(e) => updateField(index, 'required', e.target.checked)} />
+                                                                <input type="checkbox" className="hidden" checked={field.required} onChange={(e) => updateField(index, 'required', e.target.checked)} />
                                                                 <span className="text-xs text-foreground/80">Required Field</span>
                                                             </label>
                                                         </div>
                                                     </div>
                                                     
-                                                    {!createdForm && (
-                                                        <button 
-                                                            onClick={() => removeField(index)}
-                                                            className="p-1.5 text-foreground/40 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors cursor-pointer"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    )}
+                                                    <button 
+                                                        onClick={() => removeField(index)}
+                                                        className="p-1.5 text-foreground/40 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors cursor-pointer"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Sticky Footer */}
-                        <div className="absolute bottom-0 left-0 right-0 p-6 bg-background/80 backdrop-blur-md border-t border-border">
-                            <button
-                                onClick={onSubmit}
-                                disabled={isLoading}
-                                className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white rounded font-medium hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-lg shadow-primary/20 cursor-pointer"
-                            >
-                                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
-                                {isEditMode ? 'Update Form' : 'Save Form Configuration'}
-                            </button>
                         </div>
                     </div>
 
