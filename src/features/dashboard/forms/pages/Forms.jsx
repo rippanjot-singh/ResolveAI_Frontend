@@ -7,9 +7,12 @@ import { DeleteConfirmModal } from '../../../../shared/components/ui/DeleteConfi
 import { useForms } from '../hooks/useForms';
 import FormCard from '../components/FormCard';
 import FormCodeModal from '../components/FormCodeModal';
+import { useChatbots } from '../../studio/hooks/useChatbots';
+import ChatbotContextWarning from '../../../../shared/components/ui/ChatbotContextWarning';
 
 const FormsList = () => {
     const { forms, isLoading, error, fetchForms, handleToggleStatus, handleDelete } = useForms();
+    const { chatbots, isLoading: isChatbotsLoading } = useChatbots();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFormForCode, setSelectedFormForCode] = useState(null);
     const [formToDelete, setFormToDelete] = useState(null);
@@ -48,6 +51,9 @@ const FormsList = () => {
                 </header>
 
                 <div className="p-[clamp(1rem,4vw,2rem)] max-w-7xl mx-auto space-y-[clamp(1rem,4vw,2rem)]">
+                    {!isChatbotsLoading && chatbots.length === 0 && (
+                        <ChatbotContextWarning />
+                    )}
                     <div className="flex items-center justify-between gap-4">
                         <div className="relative flex-1 max-w-md">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />

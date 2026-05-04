@@ -8,9 +8,12 @@ import EmailStats from '../components/EmailStats';
 import EmailFilters from '../components/EmailFilters';
 import EmailTable from '../components/EmailTable';
 import EmailDetailsModal from '../components/EmailDetailsModal';
+import { useChatbots } from '../../studio/hooks/useChatbots';
+import ChatbotContextWarning from '../../../../shared/components/ui/ChatbotContextWarning';
 
 const Emails = () => {
     const { emails, stats, loading, refresh } = useEmails();
+    const { chatbots, isLoading: isChatbotsLoading } = useChatbots();
     const [searchQuery, setSearchQuery] = useState('');
     const [filter, setFilter] = useState('all');
     const [selectedEmail, setSelectedEmail] = useState(null);
@@ -52,6 +55,9 @@ const Emails = () => {
                 </header>
 
                 <div className="p-[clamp(1rem,4vw,2rem)] space-y-[clamp(1.5rem,5vw,2.5rem)] max-w-7xl mx-auto w-full animate-in fade-in duration-700">
+                    {!isChatbotsLoading && chatbots.length === 0 && (
+                        <ChatbotContextWarning />
+                    )}
                     <EmailStats stats={stats} loading={loading} />
 
                     <div className="space-y-6">

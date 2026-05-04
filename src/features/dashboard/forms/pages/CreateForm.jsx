@@ -6,6 +6,8 @@ import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useForms } from '../hooks/useForms';
 import { useAuth } from '../../../auth/hooks/useAuth';
 import { getForm } from '../services/form.api';
+import { useChatbots } from '../../studio/hooks/useChatbots';
+import ChatbotContextWarning from '../../../../shared/components/ui/ChatbotContextWarning';
 
 const FIELD_TYPES = [
     { value: 'text', label: 'Short Text' },
@@ -18,6 +20,7 @@ const FIELD_TYPES = [
 
 const CreateForm = () => {
     const { handleCreateForm, handleUpdateForm, isLoading } = useForms();
+    const { chatbots, isLoading: isChatbotsLoading } = useChatbots();
     const { user } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
@@ -234,6 +237,9 @@ const CreateForm = () => {
                     {/* Left Configuration Panel */}
                     <div className="w-full lg:w-[45%] lg:min-w-[400px] border-b lg:border-b-0 lg:border-r border-border bg-surface/20 flex flex-col overflow-y-auto relative">
                         <div className="p-8 space-y-8 pb-24">
+                            {!isChatbotsLoading && chatbots.length === 0 && (
+                                <ChatbotContextWarning />
+                            )}
                             <div className="space-y-1">
                                 <h2 className="text-xl font-semibold tracking-tight">{isEditMode ? 'Edit Form' : 'Form Builder'}</h2>
                                 <p className="text-sm text-foreground/50 leading-relaxed">Design your form with dynamic fields. The Name, Email, and Message fields are always included.</p>
