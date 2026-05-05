@@ -89,10 +89,10 @@ const AccountSettings = () => {
                 setFormData={setFormData} 
             />
 
-            <EmailIntegrationSection 
+            {/* <EmailIntegrationSection 
                 formData={formData} 
                 handleChange={handleChange} 
-            />
+            /> */}
         </div>
     );
 };

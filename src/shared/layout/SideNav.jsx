@@ -54,11 +54,11 @@ const PLATFORM_LINKS = [
         icon: Users,
         path: '/dashboard/leads',   
     },
-    {
-        title: 'Emails',
-        icon: Mail,
-        path: '/dashboard/email',   
-    },
+    // {
+    //     title: 'Emails',
+    //     icon: Mail,
+    //     path: '/dashboard/email',   
+    // },
     {
         title: 'Settings',
         icon: Settings,
